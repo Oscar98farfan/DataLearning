@@ -1,127 +1,152 @@
 <!doctype html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Taller de Datos</title>
-<meta name="description" content="Práctica de Python, Pandas, SQL, Power BI, Git, arquitectura de datos e IA generativa, de básico a avanzado. Funciona sin internet.">
-<meta name="theme-color" content="#2c56c9">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="css/styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Data Learning</title>
+  <meta name="description"
+    content="Práctica de Python, Pandas, SQL, Power BI, Git, arquitectura de datos e IA generativa, de básico a avanzado. Funciona sin internet.">
+  <meta name="theme-color" content="#2c56c9">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>taller<span>_</span>datos</h1>
-      <p class="sub">Python · Pandas · SQL · Power BI · Git · Arquitectura de datos · IA</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Data<span> </span>Learning</h1>
+        <p class="sub">Python · Pandas · SQL · Power BI · Git · Arquitectura de datos · IA</p>
+      </div>
+      <button class="linkbtn" id="resetBtn" type="button">Borrar progreso</button>
+    </header>
+
+    <div id="resetConfirm" class="fb bad" hidden>
+      <span>¿Borrar todo tu progreso guardado en este dispositivo?</span>
+      <div class="row"><button class="btn" id="resetYes" type="button">Sí, borrar</button><button class="btn ghost"
+          id="resetNo" type="button">Cancelar</button></div>
     </div>
-    <button class="linkbtn" id="resetBtn" type="button">Borrar progreso</button>
-  </header>
 
-  <div id="resetConfirm" class="fb bad" hidden>
-    <span>¿Borrar todo tu progreso guardado en este dispositivo?</span>
-    <div class="row"><button class="btn" id="resetYes" type="button">Sí, borrar</button><button class="btn ghost" id="resetNo" type="button">Cancelar</button></div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-practica" data-view="practica" type="button"
+        aria-selected="true">Practicar</button>
+      <button class="tab" role="tab" id="tab-laboratorio" data-view="laboratorio" type="button"
+        aria-selected="false">Laboratorio</button>
+      <button class="tab" role="tab" id="tab-conceptos" data-view="conceptos" type="button"
+        aria-selected="false">Conceptos</button>
+    </nav>
+
+    <!-- PRACTICAR -->
+    <div class="view" id="view-practica">
+      <section class="panel" id="setup">
+        <div class="label">Temas</div>
+        <div class="chips" id="topicChips"></div>
+        <div class="label">Nivel</div>
+        <div class="chips" id="levelChips"></div>
+        <div class="label">Tipo</div>
+        <div class="chips" id="kindChips"></div>
+        <div class="row">
+          <button class="btn primary grow" id="startBtn" type="button">Empezar práctica</button>
+          <button class="btn" id="reviewBtn" type="button">Repasar fallos</button>
+        </div>
+      </section>
+
+      <section class="panel" id="card" hidden></section>
+
+      <section class="panel">
+        <div class="label">Tu progreso</div>
+        <div class="stats" id="stats"></div>
+        <p class="small" style="margin:0">Se guarda en este navegador. Los ejercicios de SQL se ejecutan de verdad: si
+          tu resultado coincide con el esperado, cuenta como correcto.</p>
+      </section>
+    </div>
+
+    <!-- LABORATORIO SQL -->
+    <div class="view" id="view-laboratorio" hidden>
+      <section class="panel">
+        <h2>Laboratorio SQL</h2>
+        <p class="lead">Una base de datos de práctica para escribir tus propias consultas. Aquí nada se califica: es
+          para experimentar, equivocarte y ver qué pasa.</p>
+        <ol class="steps">
+          <li><span><b>Mira tus tablas.</b> Abajo están las 4 tablas con sus columnas. Toca <i>Ver datos</i> para ver
+              qué contienen.</span></li>
+          <li><span><b>Escribe tu consulta</b> en el editor. Borra lo que haya y escribe la tuya. Si tocas el nombre de
+              una columna, se agrega donde tengas el cursor.</span></li>
+          <li><span><b>Toca Ejecutar</b> y mira el resultado debajo del editor. Si algo sale mal, el error te dice qué
+              revisar.</span></li>
+        </ol>
+        <p class="hint">¿No sabes por dónde empezar? Al final hay ejemplos explicados: cárgalos, ejecútalos y luego
+          cámbialos.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Tus tablas</h2>
+        <div id="labSchema" class="tables">
+          <p class="small" style="margin:0">Cargando la base de datos…</p>
+        </div>
+      </section>
+
+      <section class="panel" id="labEditor">
+        <h2>Editor</h2>
+        <textarea id="labSql" class="lab" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+          aria-label="Consulta SQL"
+          placeholder="Escribe aquí tu consulta, por ejemplo: SELECT * FROM empleados;"></textarea>
+        <div class="row">
+          <button class="btn primary grow" id="labRun" type="button">Ejecutar</button>
+          <button class="btn" id="labClear" type="button">Limpiar</button>
+          <button class="btn ghost" id="labReset" type="button">Restaurar datos</button>
+        </div>
+        <p class="hint">En el PC: Ctrl + Enter ejecuta. Si borras o cambias datos, <i>Restaurar datos</i> los deja como
+          al principio.</p>
+        <div id="labOut" class="stack"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Ejemplos explicados</h2>
+        <p class="lead">Van de lo más simple a lo más avanzado. Lee qué hace cada uno, cárgalo en el editor y ejecútalo.
+        </p>
+        <div class="examples" id="labEx"></div>
+      </section>
+    </div>
+
+    <!-- CONCEPTOS -->
+    <div class="view" id="view-conceptos" hidden>
+      <div class="view" id="flows"></div>
+
+      <section class="panel">
+        <h2>Comparaciones clave</h2>
+        <div class="chips" id="cmpChips"></div>
+        <div id="cmpBody"></div>
+      </section>
+
+      <section class="panel" id="glosario">
+        <h2>Glosario</h2>
+        <input class="search" id="gSearch" type="search" placeholder="Buscar: delta, scd, spark, medallion…"
+          autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar en el glosario">
+        <div class="chips" id="gCats"></div>
+        <div class="small" id="gCount"></div>
+        <div class="terms" id="gList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Tarjetas de repaso</h2>
+        <p class="lead">Ves el término, intentas explicarlo en tu cabeza y luego volteas la tarjeta. Usa la categoría
+          elegida en el glosario.</p>
+        <div id="flashBox"></div>
+        <div class="row"><button class="btn primary grow" type="button" data-practice="arq">Ejercicios de
+            arquitectura</button><button class="btn primary grow" type="button" data-practice="ia">Ejercicios de
+            IA</button><button class="btn primary grow" type="button" data-practice="bi">Ejercicios de DAX</button>
+        </div>
+      </section>
+    </div>
   </div>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab" role="tab" id="tab-practica" data-view="practica" type="button" aria-selected="true">Practicar</button>
-    <button class="tab" role="tab" id="tab-laboratorio" data-view="laboratorio" type="button" aria-selected="false">Laboratorio</button>
-    <button class="tab" role="tab" id="tab-conceptos" data-view="conceptos" type="button" aria-selected="false">Conceptos</button>
-  </nav>
+  <div class="keys" id="keys" hidden></div>
 
-  <!-- PRACTICAR -->
-  <div class="view" id="view-practica">
-    <section class="panel" id="setup">
-      <div class="label">Temas</div>
-      <div class="chips" id="topicChips"></div>
-      <div class="label">Nivel</div>
-      <div class="chips" id="levelChips"></div>
-      <div class="label">Tipo</div>
-      <div class="chips" id="kindChips"></div>
-      <div class="row">
-        <button class="btn primary grow" id="startBtn" type="button">Empezar práctica</button>
-        <button class="btn" id="reviewBtn" type="button">Repasar fallos</button>
-      </div>
-    </section>
-
-    <section class="panel" id="card" hidden></section>
-
-    <section class="panel">
-      <div class="label">Tu progreso</div>
-      <div class="stats" id="stats"></div>
-      <p class="small" style="margin:0">Se guarda en este navegador. Los ejercicios de SQL se ejecutan de verdad: si tu resultado coincide con el esperado, cuenta como correcto.</p>
-    </section>
-  </div>
-
-  <!-- LABORATORIO SQL -->
-  <div class="view" id="view-laboratorio" hidden>
-    <section class="panel">
-      <h2>Laboratorio SQL</h2>
-      <p class="lead">Una base de datos de práctica para escribir tus propias consultas. Aquí nada se califica: es para experimentar, equivocarte y ver qué pasa.</p>
-      <ol class="steps">
-        <li><span><b>Mira tus tablas.</b> Abajo están las 4 tablas con sus columnas. Toca <i>Ver datos</i> para ver qué contienen.</span></li>
-        <li><span><b>Escribe tu consulta</b> en el editor. Borra lo que haya y escribe la tuya. Si tocas el nombre de una columna, se agrega donde tengas el cursor.</span></li>
-        <li><span><b>Toca Ejecutar</b> y mira el resultado debajo del editor. Si algo sale mal, el error te dice qué revisar.</span></li>
-      </ol>
-      <p class="hint">¿No sabes por dónde empezar? Al final hay ejemplos explicados: cárgalos, ejecútalos y luego cámbialos.</p>
-    </section>
-
-    <section class="panel">
-      <h2>Tus tablas</h2>
-      <div id="labSchema" class="tables"><p class="small" style="margin:0">Cargando la base de datos…</p></div>
-    </section>
-
-    <section class="panel" id="labEditor">
-      <h2>Editor</h2>
-      <textarea id="labSql" class="lab" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Consulta SQL" placeholder="Escribe aquí tu consulta, por ejemplo: SELECT * FROM empleados;"></textarea>
-      <div class="row">
-        <button class="btn primary grow" id="labRun" type="button">Ejecutar</button>
-        <button class="btn" id="labClear" type="button">Limpiar</button>
-        <button class="btn ghost" id="labReset" type="button">Restaurar datos</button>
-      </div>
-      <p class="hint">En el PC: Ctrl + Enter ejecuta. Si borras o cambias datos, <i>Restaurar datos</i> los deja como al principio.</p>
-      <div id="labOut" class="stack"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Ejemplos explicados</h2>
-      <p class="lead">Van de lo más simple a lo más avanzado. Lee qué hace cada uno, cárgalo en el editor y ejecútalo.</p>
-      <div class="examples" id="labEx"></div>
-    </section>
-  </div>
-
-  <!-- CONCEPTOS -->
-  <div class="view" id="view-conceptos" hidden>
-    <div class="view" id="flows"></div>
-
-    <section class="panel">
-      <h2>Comparaciones clave</h2>
-      <div class="chips" id="cmpChips"></div>
-      <div id="cmpBody"></div>
-    </section>
-
-    <section class="panel" id="glosario">
-      <h2>Glosario</h2>
-      <input class="search" id="gSearch" type="search" placeholder="Buscar: delta, scd, spark, medallion…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar en el glosario">
-      <div class="chips" id="gCats"></div>
-      <div class="small" id="gCount"></div>
-      <div class="terms" id="gList"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Tarjetas de repaso</h2>
-      <p class="lead">Ves el término, intentas explicarlo en tu cabeza y luego volteas la tarjeta. Usa la categoría elegida en el glosario.</p>
-      <div id="flashBox"></div>
-      <div class="row"><button class="btn primary grow" type="button" data-practice="arq">Ejercicios de arquitectura</button><button class="btn primary grow" type="button" data-practice="ia">Ejercicios de IA</button><button class="btn primary grow" type="button" data-practice="bi">Ejercicios de DAX</button></div>
-    </section>
-  </div>
-</div>
-
-<div class="keys" id="keys" hidden></div>
-
-<script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
+
 </html>
