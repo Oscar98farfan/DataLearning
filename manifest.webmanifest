@@ -1,6 +1,6 @@
 {
-  "name": "Taller de Datos",
-  "short_name": "Taller Datos",
+  "name": "Data Learning",
+  "short_name": "Data Learning",
   "description": "Práctica de Python, Pandas, SQL, Power BI, Git y arquitectura de datos. Funciona sin internet.",
   "lang": "es",
   "start_url": "./",

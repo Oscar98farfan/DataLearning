@@ -4,6 +4,8 @@
 //  3. Cada solución SQL ejecutable corre sin error en data/dataset.sql.
 //  4. Los términos relacionados del glosario existen.
 //  5. El service worker incluye todos los archivos de la app.
+//  6. Los ejemplos del laboratorio de Python y las soluciones de Python/Pandas corren sin error.
+//  7. Las claves usan áreas válidas.
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -11,6 +13,9 @@ import path from 'node:path';
 import { BANK } from '../data/ejercicios/index.js';
 import { TOPICS } from '../data/temas.js';
 import { GLOS, FLOWS } from '../data/conceptos.js';
+import { SETUP_LAB, SETUP_PRACTICA, EJEMPLOS_PY, CATS_PY } from '../data/python-lab.js';
+import { CLAVES, AREAS_CLAVES } from '../data/claves.js';
+import { HELPERS } from '../js/python-engine.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errores = [];
@@ -63,7 +68,40 @@ for (const f of ['index.html', 'manifest.webmanifest', ...['css', 'js', 'data', 
   if (!sw.includes(`'${f}'`)) err(`sw.js no incluye ${f} (no funcionaría sin internet)`);
 }
 
+// 6
+console.log('Probando Python (Pyodide)…');
+const { loadPyodide } = await import(path.join(root, 'vendor/pyodide/pyodide.mjs'));
+const py = await loadPyodide({ indexURL: path.join(root, 'vendor/pyodide') + path.sep, stdout: () => {}, stderr: () => {} });
+await py.loadPackage(['pandas'], { messageCallback: () => {} });
+py.runPython(HELPERS);
+const ejecutar = py.globals.get('__ejecutar');
+const tablas = {};
+for (const t of ['empleados', 'ventas', 'ventas_mes', 'ventas_mes_region']) {
+  const r = db.exec(`SELECT * FROM ${t}`)[0];
+  tablas[t] = JSON.stringify(r.values.map((row) => Object.fromEntries(r.columns.map((c, i) => [c, row[i]]))));
+}
+const nuevoNs = (setup, extra = {}) => {
+  const G = py.globals.get('dict')();
+  for (const [k, v] of Object.entries(extra)) G.set(k, py.toPy(v));
+  const [, e] = ejecutar(setup, G).toJs();
+  if (e) err(`Python: el código de arranque falla: ${e[0]}: ${e[1]}`);
+  return G;
+};
+let pyOk = 0;
+for (const ej of EJEMPLOS_PY) {
+  if (!CATS_PY[ej.c]) err(`Ejemplo de Python "${ej.t}": categoría desconocida ${ej.c}`);
+  const [, e] = ejecutar(ej.code, nuevoNs(SETUP_LAB, { _tablas: tablas })).toJs();
+  if (e) err(`Ejemplo de Python "${ej.t}" falla en la línea ${e[2]}: ${e[0]}: ${e[1]}`); else pyOk++;
+}
+for (const x of BANK.filter((e) => (e.t === 'py' || e.t === 'pd') && e.k === 'w')) {
+  const [, e] = ejecutar(x.s, nuevoNs(SETUP_PRACTICA + (x.pre ? '\n' + x.pre : ''))).toJs();
+  if (e) err(`${x.id}: la solución falla en Python: ${e[0]}: ${e[1]}`); else pyOk++;
+}
+
+// 7
+for (const c of CLAVES) if (!AREAS_CLAVES[c.a]) err(`Clave "${c.t}": área desconocida ${c.a}`);
+
 const porTema = Object.keys(TOPICS).map((t) => `${t}:${BANK.filter((x) => x.t === t).length}`).join(' ');
-console.log(`Ejercicios: ${BANK.length} (${porTema}) · SQL ejecutables: ${ejecutables} · Glosario: ${GLOS.length}`);
+console.log(`Ejercicios: ${BANK.length} (${porTema}) · SQL ejecutables: ${ejecutables} · Python probado: ${pyOk} · Glosario: ${GLOS.length} · Claves: ${CLAVES.length}`);
 if (errores.length) { console.error(`\n✗ ${errores.length} problema(s):\n- ` + errores.join('\n- ')); process.exit(1); }
 console.log('✓ Todo en orden');

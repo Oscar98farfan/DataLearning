@@ -1,7 +1,7 @@
 // Pestaña "Laboratorio SQL": consultas libres contra los datos de práctica.
 import { $, esc, insertAt, store } from './util.js';
 import { newDatabase, run, resultHtml } from './sql-engine.js';
-import { highlight, makeEditor, setCode } from './highlight.js';
+import { highlight, makeEditor, setCode, selectedCode } from './highlight.js';
 import { LEVELS } from '../data/temas.js';
 
 let db = null;
@@ -61,13 +61,15 @@ function load(sql, runNow) {
 }
 
 async function exec() {
-  const sql = $('#labSql').value;
+  const ta = $('#labSql');
+  const sel = selectedCode(ta);
+  const sql = sel.trim() ? sel : ta.value;
   if (!sql.trim()) { $('#labOut').innerHTML = '<p class="small" style="margin:0">El editor está vacío. Escribe una consulta, por ejemplo <code>SELECT * FROM empleados;</code></p>'; return; }
-  store.set('pe_lab', sql);
+  store.set('pe_lab', ta.value);
   try {
     const d = await ensure();
     const r = run(d, sql);
-    $('#labOut').innerHTML = '<div class="label">Resultado</div>' + resultHtml(r, 200);
+    $('#labOut').innerHTML = `<div class="label">Resultado${sel.trim() ? ' (solo la selección)' : ''}</div>` + resultHtml(r, 200);
     if (!r.error && !r.columns.length) renderSchema();
   } catch (e) {
     $('#labOut').innerHTML = `<div class="fb bad"><span>${esc(e.message)}</span></div>`;

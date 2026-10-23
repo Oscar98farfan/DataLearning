@@ -2,9 +2,27 @@
 import { $, store, insertAt } from './util.js';
 import { initPractica, startTopic, keysVisible, resetProgress } from './practica.js';
 import { initLaboratorio, openLaboratorio } from './laboratorio.js';
+import { initLabPython, openLabPython } from './laboratorio-python.js';
 import { initConceptos, resetKnown } from './conceptos.js';
+import { initClaves } from './claves.js';
 
-const VIEWS = ['practica', 'laboratorio', 'conceptos'];
+const VIEWS = ['practica', 'laboratorio', 'conceptos', 'claves'];
+let lab = store.get('pe_lab_tipo', 'sql');
+
+const enLab = () => !$('#view-laboratorio').hidden;
+
+function updateKeys() {
+  $('#keys').hidden = !(enLab() || (!$('#view-practica').hidden && keysVisible()));
+}
+
+function setLab(t) {
+  lab = t === 'py' ? 'py' : 'sql';
+  $('#lab-sql').hidden = lab !== 'sql';
+  $('#lab-py').hidden = lab !== 'py';
+  document.querySelectorAll('.seg-b').forEach((b) => b.setAttribute('aria-selected', b.dataset.lab === lab));
+  store.set('pe_lab_tipo', lab);
+  if (lab === 'sql') openLaboratorio(); else openLabPython();
+}
 
 function setView(v) {
   if (!VIEWS.includes(v)) v = 'practica';
@@ -12,10 +30,16 @@ function setView(v) {
     $('#view-' + name).hidden = name !== v;
     $('#tab-' + name).setAttribute('aria-selected', name === v);
   }
-  $('#keys').hidden = !((v === 'practica' && keysVisible()) || v === 'laboratorio');
+  updateKeys();
   store.set('pe_view', v);
   window.scrollTo(0, 0);
-  if (v === 'laboratorio') openLaboratorio();
+  if (v === 'laboratorio') setLab(lab);
+}
+
+// El editor activo recibe los símbolos de la barra inferior.
+function editorActivo() {
+  if (enLab()) return lab === 'py' ? $('#pyCode') : $('#labSql');
+  return $('#ans');
 }
 
 function renderKeys() {
@@ -26,10 +50,9 @@ function renderKeys() {
     b.type = 'button'; b.className = 'key';
     b.textContent = t === '    ' ? '⇥' : t === '\n' ? '↵' : t;
     b.setAttribute('aria-label', t === '    ' ? 'Tabulación' : t === '\n' ? 'Nueva línea' : t);
-    const target = () => (!$('#view-laboratorio').hidden ? $('#labSql') : $('#ans'));
     b.addEventListener('mousedown', (e) => e.preventDefault());
-    b.addEventListener('touchstart', (e) => { e.preventDefault(); insertAt(target(), t); }, { passive: false });
-    b.addEventListener('click', () => insertAt(target(), t));
+    b.addEventListener('touchstart', (e) => { e.preventDefault(); insertAt(editorActivo(), t); }, { passive: false });
+    b.addEventListener('click', () => insertAt(editorActivo(), t));
     k.append(b);
   }
 }
@@ -37,10 +60,13 @@ function renderKeys() {
 function init() {
   initPractica();
   initLaboratorio();
+  initLabPython();
   initConceptos();
+  initClaves();
   renderKeys();
 
   document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => setView(b.dataset.view)));
+  document.querySelectorAll('.seg-b').forEach((b) => (b.onclick = () => setLab(b.dataset.lab)));
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-practice]');
     if (b) { setView('practica'); startTopic(b.dataset.practice); }
@@ -51,7 +77,7 @@ function init() {
   $('#resetYes').onclick = () => { resetProgress(); resetKnown(); $('#resetConfirm').hidden = true; };
 
   // La barra de símbolos aparece al empezar un ejercicio de escritura
-  new MutationObserver(() => { if (!$('#view-practica').hidden) $('#keys').hidden = !keysVisible(); })
+  new MutationObserver(() => { if (!$('#view-practica').hidden) updateKeys(); })
     .observe($('#card'), { childList: true, attributes: true, attributeFilter: ['hidden'] });
 
   const hash = location.hash.slice(1);

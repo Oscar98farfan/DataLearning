@@ -3,7 +3,11 @@ import { TOPICS, LEVELS } from '../data/temas.js';
 import { BANK } from '../data/ejercicios/index.js';
 import { $, esc, norm, shuffle, chip, store, insertAt } from './util.js';
 import { newDatabase, runIsolated, sameResult, resultHtml } from './sql-engine.js';
-import { highlight, langFor, makeEditor } from './highlight.js';
+import { highlight, langFor, makeEditor, stripComments } from './highlight.js';
+import { loadPython, newNamespace, runPython, pythonResultHtml } from './python-engine.js';
+import { SETUP_PRACTICA } from '../data/python-lab.js';
+
+const PROBAR_PY = (x) => (x.t === 'py' || x.t === 'pd') && x.k === 'w';
 
 let prog = store.get('pe_prog', {});
 let sel = store.get('pe_sel', { topics: Object.keys(TOPICS), levels: [1, 2, 3], kind: 'mix' });
@@ -84,7 +88,7 @@ function show() {
   if (cur.c0) h += `<pre class="ctx">${esc(cur.c0)}</pre>`;
   if (cur.k === 'w') {
     h += `<textarea id="ans" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="${cur.run ? 'Escribe tu consulta SQL' : 'Escribe tu código aquí'}"></textarea>
-    <div class="row">${cur.run ? '<button class="btn" id="runBtn" type="button">Ejecutar</button>' : ''}<button class="btn primary grow" id="check" type="button">Comprobar</button>${cur.h ? '<button class="btn" id="hint" type="button">Pista</button>' : ''}<button class="btn ghost" id="sol" type="button">Ver solución</button></div>
+    <div class="row">${cur.run ? '<button class="btn" id="runBtn" type="button">Ejecutar</button>' : ''}${PROBAR_PY(cur) ? '<button class="btn" id="pyBtn" type="button">Probar</button>' : ''}<button class="btn primary grow" id="check" type="button">Comprobar</button>${cur.h ? '<button class="btn" id="hint" type="button">Pista</button>' : ''}<button class="btn ghost" id="sol" type="button">Ver solución</button></div>
     <div id="out"></div>`;
   } else {
     h += `<div class="opts">${cur.o.map((o, i) => `<button class="opt" type="button" data-i="${i}">${o}</button>`).join('')}</div>`;
@@ -103,6 +107,7 @@ function show() {
     });
     $('#check').onclick = check;
     if (cur.run) $('#runBtn').onclick = runOnly;
+    if (PROBAR_PY(cur)) $('#pyBtn').onclick = probarPython;
     if (cur.h) $('#hint').onclick = () => fb('info', `<span><strong>Pista:</strong> ${cur.h}</span>`);
     $('#sol').onclick = reveal;
   } else {
@@ -131,10 +136,26 @@ async function runOnly() {
   catch (e) { out(`<div class="fb bad"><span>${esc(e.message)}</span></div>`); }
 }
 
+// Ejecuta la respuesta en Python real con datos de ejemplo (no califica; solo muestra el resultado).
+async function probarPython() {
+  const v = $('#ans').value;
+  if (!v.trim()) { fb('info', '<span>Escribe tu código primero.</span>'); return; }
+  const btn = $('#pyBtn'); btn.disabled = true;
+  try {
+    out('<p class="small" style="margin:0">Iniciando Python… la primera vez descarga unos 50 MB y luego funciona sin internet.</p>');
+    await loadPython((m) => m && out(`<p class="small" style="margin:0">${esc(m)}</p>`));
+    const G = await newNamespace(SETUP_PRACTICA + (cur.pre ? '\n' + cur.pre : ''));
+    const r = await runPython(v, G);
+    out('<div class="label">Tu resultado (con datos de ejemplo)</div>' + pythonResultHtml(r));
+  } catch (e) {
+    out(`<div class="fb bad"><span>No se pudo iniciar Python. ${navigator.onLine ? '' : 'La primera vez necesitas internet. '}(${esc(e.message)})</span></div>`);
+  } finally { if ($('#pyBtn')) $('#pyBtn').disabled = false; }
+}
+
 async function check() {
   const v = $('#ans').value;
   if (!v.trim()) { fb('info', '<span>Escribe una respuesta primero.</span>'); return; }
-  let ok = cur.r.every((re) => re.test(norm(v)));
+  let ok = cur.r.every((re) => re.test(norm(stripComments(v, langFor(cur)))));
   if (cur.run) {
     try {
       const d = await db();

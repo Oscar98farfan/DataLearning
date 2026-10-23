@@ -89,15 +89,70 @@ export function langFor(ex, code = '') {
   return 'python';
 }
 
+const PREFIJO = { sql: '-- ', python: '# ', dax: '// ', bash: '# ' };
+const NOMBRE = { sql: 'SQL', python: 'Python', dax: 'DAX', bash: 'Bash / Git' };
+
+// Quita las líneas comentadas (para validar respuestas que tengan partes comentadas).
+export function stripComments(code, lang) {
+  const p = (PREFIJO[lang] || '#').trim();
+  return code.split('\n').filter((l) => !l.trimStart().startsWith(p)).join('\n');
+}
+
+// Comenta o descomenta las líneas seleccionadas (o la línea del cursor).
+export function toggleComment(ta) {
+  const prefix = PREFIJO[ta.dataset.lang] || '# ';
+  const p = prefix.trim();
+  const v = ta.value, s = ta.selectionStart, e = ta.selectionEnd;
+  const ini = v.lastIndexOf('\n', s - 1) + 1;
+  let fin = v.indexOf('\n', e > s && v[e - 1] === '\n' ? e - 1 : e);
+  if (fin < 0) fin = v.length;
+  const lineas = v.slice(ini, fin).split('\n');
+  const conTexto = lineas.filter((l) => l.trim());
+  const quitar = conTexto.length > 0 && conTexto.every((l) => l.trimStart().startsWith(p));
+  const re = new RegExp('^(\\s*)' + p.replace(/[/\\^$*+?.()|[\]{}-]/g, '\\$&') + ' ?');
+  const nuevo = lineas.map((l) => {
+    if (!l.trim()) return l;
+    if (quitar) return l.replace(re, '$1');
+    const ind = l.match(/^\s*/)[0];
+    return ind + prefix + l.slice(ind.length);
+  }).join('\n');
+  ta.focus();
+  ta.setSelectionRange(ini, fin);
+  let ok = false;
+  try { ok = document.execCommand('insertText', false, nuevo); } catch { ok = false; }   // conserva Ctrl+Z
+  if (!ok || ta.value.slice(ini, ini + nuevo.length) !== nuevo) ta.setRangeText(nuevo, ini, fin, 'end');
+  // deja solo el cursor al final del bloque: así Ejecutar corre todo el editor y no solo lo comentado
+  ta.setSelectionRange(ini + nuevo.length, ini + nuevo.length);
+  ta.dispatchEvent(new Event('input'));
+}
+
+// Texto seleccionado en el editor (vacío si no hay selección).
+export const selectedCode = (ta) => ta.value.slice(ta.selectionStart, ta.selectionEnd);
+
 // Envuelve un textarea para mostrar los colores detrás del texto. Crece con el contenido.
+// Agrega una barra con el lenguaje y el botón para comentar líneas.
 export function makeEditor(ta, lang) {
-  if (ta.closest('.code-ed')) { ta.dataset.lang = lang; ta.dispatchEvent(new Event('input')); return; }
+  if (ta.closest('.code-ed')) {
+    ta.dataset.lang = lang;
+    const l = ta.closest('.code-ed').previousElementSibling;
+    if (l && l.classList.contains('ed-bar')) l.querySelector('.ed-lang').textContent = NOMBRE[lang] || lang;
+    ta.dispatchEvent(new Event('input')); return;
+  }
+  const bar = document.createElement('div');
+  bar.className = 'ed-bar';
+  bar.innerHTML = `<span class="ed-lang">${NOMBRE[lang] || lang}</span><button type="button" class="ed-btn" title="Comentar o descomentar (Ctrl + /)"><span class="mono">${(PREFIJO[lang] || '#').trim()}</span> Comentar líneas</button>`;
+  const btn = bar.querySelector('button');
+  btn.addEventListener('mousedown', (e) => e.preventDefault());      // no perder la selección
+  btn.addEventListener('click', () => toggleComment(ta));
   const wrap = document.createElement('div');
   wrap.className = 'code-ed';
   const pre = document.createElement('pre');
   pre.className = 'hl'; pre.setAttribute('aria-hidden', 'true');
-  ta.before(wrap); wrap.append(pre, ta);
+  ta.before(bar); ta.before(wrap); wrap.append(pre, ta);
   ta.dataset.lang = lang;
+  ta.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '/' || e.code === 'Slash')) { e.preventDefault(); toggleComment(ta); }
+  });
   const paint = () => {
     pre.innerHTML = highlight(ta.value, ta.dataset.lang) + '\n';
     ta.style.height = 'auto';

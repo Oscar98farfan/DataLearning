@@ -1,10 +1,12 @@
-# Taller de Datos
+# Data Learning
 
 Plataforma para practicar programación de **analista e ingeniero de datos**, de lo básico a lo avanzado, desde el celular o el PC y **sin internet**.
 
-- **Practicar:** 296 ejercicios de Python, Pandas, SQL, Power BI / DAX (con inteligencia de tiempo), Git, Arquitectura de datos (Spark y Delta) e IA generativa. Son para escribir código o de opción múltiple, con colores de sintaxis.
+- **Practicar:** 331 ejercicios de Python (incluida POO), Pandas (incluida limpieza de datos), SQL, Power BI / DAX (con inteligencia de tiempo), Git, Arquitectura de datos (Spark y Delta) e IA generativa. Son para escribir código o de opción múltiple, con colores de sintaxis y un botón para comentar líneas. Los de Python y Pandas tienen el botón **Probar** para ejecutarlos de verdad.
 - **SQL de verdad:** los ejercicios de SQL se ejecutan en SQLite dentro del navegador. Si tu resultado coincide con el esperado, cuenta como correcto aunque lo hayas escrito distinto.
 - **Laboratorio SQL:** consultas libres sobre 4 tablas de práctica, con pasos guiados y 8 ejemplos explicados (de SELECT a CTE + LAG).
+- **Laboratorio de Python:** Python y pandas reales en el navegador (Pyodide). Usa los mismos datos como DataFrames más una tabla sucia para limpieza, e incluye 24 ejemplos: funciones, POO, limpieza, merge, groupby y series de tiempo. La primera vez descarga unos 50 MB; después funciona sin internet.
+- **Claves:** 61 buenas prácticas por lenguaje con ejemplos de qué evitar y cómo hacerlo mejor.
 - **Conceptos:** el recorrido de los datos (OLTP → lakehouse → medallion → Power BI) y el de un asistente con IA (RAG, Copilot, Copilot Studio). Incluye 13 comparaciones, un glosario de 175 términos y tarjetas de repaso.
 
 ## Cómo usarla
@@ -28,7 +30,10 @@ css/styles.css          estilos (tema claro y oscuro)
 js/
   app.js                pestañas, barra de símbolos, modo sin internet
   practica.js           sesión de ejercicios, validación, progreso
-  laboratorio.js        consultas SQL libres
+  laboratorio.js        laboratorio SQL
+  laboratorio-python.js laboratorio de Python
+  python-engine.js      carga Pyodide + pandas y ejecuta celdas
+  claves.js             buenas prácticas por lenguaje
   conceptos.js          recorrido, comparaciones, glosario, tarjetas
   sql-engine.js         carga SQLite (sql.js) y compara resultados
   highlight.js          colores de sintaxis (SQL, Python, DAX, Git)
@@ -39,7 +44,9 @@ data/
   ejercicios/*.js       un archivo por tema
   conceptos.js          glosario, recorridos (datos e IA) y comparaciones
   dataset.sql           datos de práctica (generados)
-vendor/                 sql.js 1.10.3 (SQLite en WebAssembly)
+  python-lab.js         datos, ejemplos y entorno de Python
+  claves.js             contenido de la pestaña Claves
+vendor/                 sql.js 1.10.3 (SQLite) y pyodide 0.26.4 (Python 3.12 + pandas 2.2)
 scripts/
   validar.mjs           revisa todo el contenido (npm test)
   generar-dataset.py    regenera data/dataset.sql
@@ -77,7 +84,7 @@ Antes de subir cambios, corre:
 npm test
 ```
 
-Verifica que cada solución pase su corrector, que cada SQL corra sobre los datos y que el modo sin internet incluya todos los archivos.
+Verifica que cada solución pase su corrector, que cada SQL corra sobre los datos, que cada ejemplo y solución de Python corra en Python real (tarda unos 10 segundos) y que el modo sin internet incluya todos los archivos.
 
 Si agregas un archivo nuevo (JS, datos o imagen), inclúyelo en `ARCHIVOS` dentro de `sw.js`. Para que los celulares descarguen la versión nueva de inmediato, sube el número de `CACHE` (por ejemplo `taller-datos-v2`).
 
@@ -96,11 +103,12 @@ Si agregas un archivo nuevo (JS, datos o imagen), inclúyelo en `ARCHIVOS` dentr
 
 - [x] **Fase 1:** proyecto ordenado, app instalable sin internet, publicación en GitHub Pages
 - [x] **Fase 1b:** SQL real en el navegador y laboratorio
-- [ ] **Fase 2:** Python y pandas reales en el navegador (Pyodide)
+- [x] **Fase 2:** Python y pandas reales en el navegador (Pyodide)
 - [ ] **Fase 3:** ruta de aprendizaje de analista a ingeniero y mini proyectos (por ejemplo, Bronze → Silver → Gold con un caso de ventas)
 - [ ] **Fase 4:** Supabase, con login y progreso sincronizado entre celular y PC
 
 ## Créditos
 
 - [sql.js](https://github.com/sql-js/sql.js) (licencia MIT): SQLite compilado a WebAssembly.
+- [Pyodide](https://pyodide.org) (licencia MPL 2.0): Python compilado a WebAssembly, con numpy y pandas.
 - Datos de práctica ficticios.
