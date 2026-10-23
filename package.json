@@ -1,0 +1,12 @@
+{
+  "name": "taller-datos",
+  "version": "1.0.0",
+  "description": "Plataforma para practicar Python, Pandas, SQL, Power BI, Git y arquitectura de datos. Funciona sin internet.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "node scripts/validar.mjs",
+    "dataset": "python scripts/generar-dataset.py"
+  }
+}

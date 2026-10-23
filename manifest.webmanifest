@@ -1,0 +1,16 @@
+{
+  "name": "Taller de Datos",
+  "short_name": "Taller Datos",
+  "description": "Práctica de Python, Pandas, SQL, Power BI, Git y arquitectura de datos. Funciona sin internet.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#2c56c9",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
