@@ -3,9 +3,16 @@ import { TOPICS, LEVELS } from '../data/temas.js';
 import { BANK } from '../data/ejercicios/index.js';
 import { $, esc, norm, shuffle, chip, store, insertAt } from './util.js';
 import { newDatabase, runIsolated, sameResult, resultHtml } from './sql-engine.js';
+import { highlight, langFor, makeEditor } from './highlight.js';
 
 let prog = store.get('pe_prog', {});
 let sel = store.get('pe_sel', { topics: Object.keys(TOPICS), levels: [1, 2, 3], kind: 'mix' });
+// Activa los temas nuevos para quien ya tenía una selección guardada
+{
+  const vistos = store.get('pe_topics_seen', ['py', 'pd', 'sql', 'bi', 'git', 'arq']);
+  for (const k of Object.keys(TOPICS)) if (!vistos.includes(k) && !sel.topics.includes(k)) sel.topics.push(k);
+  store.set('pe_topics_seen', Object.keys(TOPICS)); store.set('pe_sel', sel);
+}
 let queue = [], pos = 0, cur = null, tries = 0, answered = false;
 let practiceDb = null;
 
@@ -89,6 +96,7 @@ function show() {
   $('#next').onclick = () => { pos++; show(); };
   if (cur.k === 'w') {
     const ta = $('#ans');
+    makeEditor(ta, langFor(cur));
     ta.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') { e.preventDefault(); insertAt(ta, '    '); }
       else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); check(); }
@@ -142,7 +150,7 @@ async function check() {
   }
 }
 
-function solBlock() { return `<pre>${esc(cur.s)}</pre>${cur.e ? `<p class="exp">${cur.e}</p>` : ''}`; }
+function solBlock() { return `<pre class="code">${highlight(cur.s, langFor(cur))}</pre>${cur.e ? `<p class="exp">${cur.e}</p>` : ''}`; }
 
 async function reveal() {
   answered = true;

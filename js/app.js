@@ -41,7 +41,10 @@ function init() {
   renderKeys();
 
   document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => setView(b.dataset.view)));
-  $('#toArq').onclick = () => { setView('practica'); startTopic('arq'); };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-practice]');
+    if (b) { setView('practica'); startTopic(b.dataset.practice); }
+  });
 
   $('#resetBtn').onclick = () => { $('#resetConfirm').hidden = false; };
   $('#resetNo').onclick = () => { $('#resetConfirm').hidden = true; };

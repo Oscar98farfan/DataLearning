@@ -1,5 +1,5 @@
 // Pestaña "Conceptos": recorrido de los datos, comparaciones, glosario y tarjetas de repaso.
-import { CATS, GLOS, FLOW, CMP } from '../data/conceptos.js';
+import { CATS, GLOS, FLOWS, CMP, AREAS } from '../data/conceptos.js';
 import { $, fold, chip, shuffle, store } from './util.js';
 
 const slug = (s) => 'g-' + fold(s).replace(/[^a-z0-9]+/g, '-');
@@ -13,12 +13,21 @@ const relBtns = (list) => {
 };
 
 function renderFlow() {
-  $('#flow').innerHTML = FLOW.map((f, i) => `<li><span class="num">${i + 1}</span><div style="min-width:0"><h3>${f.h}</h3><p>${f.p}</p>${f.medal ? `<div class="medal"><div class="m-br"><b>Bronze</b>Crudo, tal cual llegó</div><div class="m-si"><b>Silver</b>Limpio, sin duplicados</div><div class="m-go"><b>Gold</b>Métricas para el negocio</div></div>` : ''}${relBtns(f.r)}</div></li>`).join('');
+  $('#flows').innerHTML = FLOWS.map((fl) => `<section class="panel" id="flow-${fl.id}"><h2>${fl.h}</h2><p class="lead">${fl.lead}</p>
+    <ol class="flow">${fl.steps.map((f, i) => `${f.phase ? `<li class="phase-li"><span></span><div class="phase">${f.phase}</div></li>` : ''}<li><span class="num">${i + 1}</span><div style="min-width:0"><h3>${f.h}</h3><p>${f.p}</p>${f.medal ? `<div class="medal"><div class="m-br"><b>Bronze</b>Crudo, tal cual llegó</div><div class="m-si"><b>Silver</b>Limpio, sin duplicados</div><div class="m-go"><b>Gold</b>Métricas para el negocio</div></div>` : ''}${relBtns(f.r)}</div></li>`).join('')}</ol>
+    ${fl.roles ? `<div class="label">En una frase</div><div class="roles">${fl.roles.map((r) => `<div class="role"><b>${r.t}</b><span>${r.v}</span></div>`).join('')}</div>` : ''}
+    ${fl.note ? `<p class="note">${fl.note}</p>` : ''}${fl.topic ? `<button class="btn primary" type="button" data-practice="${fl.topic}">${fl.btn}</button>` : ''}</section>`).join('');
 }
 
 function renderCmp() {
   const cc = $('#cmpChips'); cc.innerHTML = '';
-  CMP.forEach((c, i) => cc.append(chip(c.n, i === cmpI, () => { cmpI = i; renderCmp(); })));
+  for (const [a, nombre] of Object.entries(AREAS)) {
+    const g = document.createElement('div'); g.className = 'cmp-group';
+    g.innerHTML = `<div class="label">${nombre}</div>`;
+    const row = document.createElement('div'); row.className = 'chips';
+    CMP.forEach((c, i) => { if (c.a === a) row.append(chip(c.n, i === cmpI, () => { cmpI = i; renderCmp(); })); });
+    g.append(row); cc.append(g);
+  }
   const c = CMP[cmpI];
   $('#cmpBody').innerHTML = `<div class="tbl cmp"><table><thead><tr>${c.h.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${c.rows.map((r) => `<tr>${r.map((x) => `<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="small" style="margin:6px 0 0">Desliza la tabla hacia los lados si no ves todas las columnas.</p>${c.note ? `<p class="note" style="margin-top:10px">${c.note}</p>` : ''}`;
 }

@@ -6,5 +6,6 @@ import sql from './sql.js';
 import powerbi from './powerbi.js';
 import git from './git.js';
 import arquitectura from './arquitectura.js';
+import ia from './ia.js';
 
-export const BANK = [...python, ...pandas, ...sql, ...powerbi, ...git, ...arquitectura];
+export const BANK = [...python, ...pandas, ...sql, ...powerbi, ...git, ...arquitectura, ...ia];

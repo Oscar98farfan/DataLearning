@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Taller de Datos</title>
-<meta name="description" content="Práctica de Python, Pandas, SQL, Power BI, Git y arquitectura de datos, de básico a avanzado. Funciona sin internet.">
+<meta name="description" content="Práctica de Python, Pandas, SQL, Power BI, Git, arquitectura de datos e IA generativa, de básico a avanzado. Funciona sin internet.">
 <meta name="theme-color" content="#2c56c9">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -16,7 +16,7 @@
   <header>
     <div>
       <h1>taller<span>_</span>datos</h1>
-      <p class="sub">Python · Pandas · SQL · Power BI · Git · Arquitectura de datos</p>
+      <p class="sub">Python · Pandas · SQL · Power BI · Git · Arquitectura de datos · IA</p>
     </div>
     <button class="linkbtn" id="resetBtn" type="button">Borrar progreso</button>
   </header>
@@ -60,28 +60,42 @@
   <div class="view" id="view-laboratorio" hidden>
     <section class="panel">
       <h2>Laboratorio SQL</h2>
-      <p class="lead">Escribe cualquier consulta sobre los datos de práctica. Corre en SQLite dentro de tu navegador, sin internet. Puedes usar CTE, LAG, LEAD, ROW_NUMBER e incluso INSERT o UPDATE.</p>
-      <div class="chips" id="labEx"></div>
-      <textarea id="labSql" class="lab" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Consulta SQL"></textarea>
+      <p class="lead">Una base de datos de práctica para escribir tus propias consultas. Aquí nada se califica: es para experimentar, equivocarte y ver qué pasa.</p>
+      <ol class="steps">
+        <li><span><b>Mira tus tablas.</b> Abajo están las 4 tablas con sus columnas. Toca <i>Ver datos</i> para ver qué contienen.</span></li>
+        <li><span><b>Escribe tu consulta</b> en el editor. Borra lo que haya y escribe la tuya. Si tocas el nombre de una columna, se agrega donde tengas el cursor.</span></li>
+        <li><span><b>Toca Ejecutar</b> y mira el resultado debajo del editor. Si algo sale mal, el error te dice qué revisar.</span></li>
+      </ol>
+      <p class="hint">¿No sabes por dónde empezar? Al final hay ejemplos explicados: cárgalos, ejecútalos y luego cámbialos.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Tus tablas</h2>
+      <div id="labSchema" class="tables"><p class="small" style="margin:0">Cargando la base de datos…</p></div>
+    </section>
+
+    <section class="panel" id="labEditor">
+      <h2>Editor</h2>
+      <textarea id="labSql" class="lab" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Consulta SQL" placeholder="Escribe aquí tu consulta, por ejemplo: SELECT * FROM empleados;"></textarea>
       <div class="row">
         <button class="btn primary grow" id="labRun" type="button">Ejecutar</button>
+        <button class="btn" id="labClear" type="button">Limpiar</button>
         <button class="btn ghost" id="labReset" type="button">Restaurar datos</button>
       </div>
+      <p class="hint">En el PC: Ctrl + Enter ejecuta. Si borras o cambias datos, <i>Restaurar datos</i> los deja como al principio.</p>
       <div id="labOut" class="stack"></div>
     </section>
+
     <section class="panel">
-      <div class="label">Tablas disponibles</div>
-      <div id="labSchema" class="stack"><p class="small" style="margin:0">Cargando…</p></div>
+      <h2>Ejemplos explicados</h2>
+      <p class="lead">Van de lo más simple a lo más avanzado. Lee qué hace cada uno, cárgalo en el editor y ejecútalo.</p>
+      <div class="examples" id="labEx"></div>
     </section>
   </div>
 
   <!-- CONCEPTOS -->
   <div class="view" id="view-conceptos" hidden>
-    <section class="panel">
-      <h2>El recorrido de los datos</h2>
-      <p class="lead">Del sistema donde nace un dato hasta el tablero de Power BI. Toca cualquier término para ver su definición.</p>
-      <ol class="flow" id="flow"></ol>
-    </section>
+    <div class="view" id="flows"></div>
 
     <section class="panel">
       <h2>Comparaciones clave</h2>
@@ -101,7 +115,7 @@
       <h2>Tarjetas de repaso</h2>
       <p class="lead">Ves el término, intentas explicarlo en tu cabeza y luego volteas la tarjeta. Usa la categoría elegida en el glosario.</p>
       <div id="flashBox"></div>
-      <button class="btn primary" id="toArq" type="button">Hacer ejercicios de arquitectura de datos</button>
+      <div class="row"><button class="btn primary grow" type="button" data-practice="arq">Ejercicios de arquitectura</button><button class="btn primary grow" type="button" data-practice="ia">Ejercicios de IA</button><button class="btn primary grow" type="button" data-practice="bi">Ejercicios de DAX</button></div>
     </section>
   </div>
 </div>

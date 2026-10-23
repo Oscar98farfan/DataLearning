@@ -2,7 +2,7 @@
 // Estrategia: responde desde la caché al instante y, si hay internet, la actualiza
 // en segundo plano (la versión nueva aparece la siguiente vez que abras la app).
 // Si agregas un archivo nuevo, inclúyelo en ARCHIVOS (npm test lo verifica).
-const CACHE = 'taller-datos-v1';
+const CACHE = 'taller-datos-v2';
 const ARCHIVOS = [
   './',
   'index.html',
@@ -14,6 +14,7 @@ const ARCHIVOS = [
   'js/laboratorio.js',
   'js/conceptos.js',
   'js/sql-engine.js',
+  'js/highlight.js',
   'data/temas.js',
   'data/contextos.js',
   'data/conceptos.js',
@@ -25,6 +26,7 @@ const ARCHIVOS = [
   'data/ejercicios/powerbi.js',
   'data/ejercicios/git.js',
   'data/ejercicios/arquitectura.js',
+  'data/ejercicios/ia.js',
   'vendor/sql-wasm.js',
   'vendor/sql-wasm.wasm',
   'icons/icon.svg',

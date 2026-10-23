@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { BANK } from '../data/ejercicios/index.js';
 import { TOPICS } from '../data/temas.js';
-import { GLOS, FLOW } from '../data/conceptos.js';
+import { GLOS, FLOWS } from '../data/conceptos.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errores = [];
@@ -51,7 +51,7 @@ for (const x of BANK.filter((e) => e.run)) {
 
 // 4
 const terms = new Set(GLOS.map((g) => g.t));
-for (const r of [...GLOS.flatMap((g) => g.r), ...FLOW.flatMap((f) => f.r)]) if (!terms.has(r)) err(`Glosario: término relacionado inexistente "${r}"`);
+for (const r of [...GLOS.flatMap((g) => g.r), ...FLOWS.flatMap((fl) => fl.steps).flatMap((f) => f.r)]) if (!terms.has(r)) err(`Glosario: término relacionado inexistente "${r}"`);
 
 // 5
 const sw = readFileSync(path.join(root, 'sw.js'), 'utf8');

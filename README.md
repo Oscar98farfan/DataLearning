@@ -2,10 +2,10 @@
 
 Plataforma para practicar programación de **analista e ingeniero de datos**, de lo básico a lo avanzado, desde el celular o el PC y **sin internet**.
 
-- **Practicar:** 234 ejercicios de Python, Pandas, SQL, Power BI / DAX, Git y Arquitectura de datos (Spark y Delta). Son para escribir código o de opción múltiple.
+- **Practicar:** 296 ejercicios de Python, Pandas, SQL, Power BI / DAX (con inteligencia de tiempo), Git, Arquitectura de datos (Spark y Delta) e IA generativa. Son para escribir código o de opción múltiple, con colores de sintaxis.
 - **SQL de verdad:** los ejercicios de SQL se ejecutan en SQLite dentro del navegador. Si tu resultado coincide con el esperado, cuenta como correcto aunque lo hayas escrito distinto.
-- **Laboratorio SQL:** consultas libres (CTE, LAG, LEAD, ROW_NUMBER, INSERT, UPDATE) sobre datos de práctica.
-- **Conceptos:** recorrido de los datos (OLTP → ingesta → lakehouse → medallion → modelo → Power BI), comparaciones, glosario de 118 términos y tarjetas de repaso.
+- **Laboratorio SQL:** consultas libres sobre 4 tablas de práctica, con pasos guiados y 8 ejemplos explicados (de SELECT a CTE + LAG).
+- **Conceptos:** el recorrido de los datos (OLTP → lakehouse → medallion → Power BI) y el de un asistente con IA (RAG, Copilot, Copilot Studio). Incluye 13 comparaciones, un glosario de 175 términos y tarjetas de repaso.
 
 ## Cómo usarla
 
@@ -31,12 +31,13 @@ js/
   laboratorio.js        consultas SQL libres
   conceptos.js          recorrido, comparaciones, glosario, tarjetas
   sql-engine.js         carga SQLite (sql.js) y compara resultados
+  highlight.js          colores de sintaxis (SQL, Python, DAX, Git)
   util.js               utilidades
 data/
   temas.js              temas y niveles
   contextos.js          esquemas que se muestran en los ejercicios
   ejercicios/*.js       un archivo por tema
-  conceptos.js          glosario, recorrido y tablas comparativas
+  conceptos.js          glosario, recorridos (datos e IA) y comparaciones
   dataset.sql           datos de práctica (generados)
 vendor/                 sql.js 1.10.3 (SQLite en WebAssembly)
 scripts/

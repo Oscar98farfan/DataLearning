@@ -43,4 +43,5 @@ export function insertAt(ta, t) {
   const p = pairs[t] ? s + 1 : s + t.length;
   ta.setSelectionRange(p, p);
   ta.focus();
+  ta.dispatchEvent(new Event('input'));
 }
