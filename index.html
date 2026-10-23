@@ -61,7 +61,9 @@
   <div class="view" id="view-laboratorio" hidden>
     <div class="seg" role="tablist" aria-label="Tipo de laboratorio">
       <button class="seg-b" type="button" role="tab" data-lab="sql" aria-selected="true">SQL</button>
-      <button class="seg-b" type="button" role="tab" data-lab="py" aria-selected="false">Python y pandas</button>
+      <button class="seg-b" type="button" role="tab" data-lab="py" aria-selected="false">Python</button>
+      <button class="seg-b" type="button" role="tab" data-lab="git" aria-selected="false">Git</button>
+      <button class="seg-b" type="button" role="tab" data-lab="ia" aria-selected="false">IA</button>
     </div>
 
   <div class="view" id="lab-sql">
@@ -138,6 +140,109 @@
       <div class="examples" id="pyEx"></div>
     </section>
   </div>
+
+  <div class="view" id="lab-git" hidden>
+    <section class="panel">
+      <h2>Laboratorio de Git</h2>
+      <p class="lead">Un repositorio simulado para practicar sin miedo: escribes comandos como en Git Bash y el grafo muestra la historia en vivo. Elige un reto o usa el modo libre.</p>
+      <label class="label" for="gitReto">Reto</label>
+      <select id="gitReto" class="search"></select>
+      <p class="small" id="gitProg" style="margin:0"></p>
+      <div id="gitRetoInfo" class="stack"></div>
+      <div class="row"><button class="btn ghost" id="gitReset" type="button">Reiniciar este reto</button></div>
+    </section>
+
+    <section class="panel">
+      <div class="qhead"><h2>Historia</h2><span class="small" id="gitHead"></span></div>
+      <div id="gitGraph" class="graph"></div>
+      <p class="hint">Cada punto es un commit; el relleno marca dónde estás (HEAD) y el borde grueso, un commit de fusión. Las etiquetas son las ramas.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Terminal</h2>
+      <div id="gitTerm" class="term-out" role="log" aria-live="polite"></div>
+      <form id="gitForm" class="term-in">
+        <span class="prompt mono">$</span>
+        <input id="gitCmd" type="text" class="mono" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="git status" aria-label="Comando de Git">
+        <button class="btn primary" type="submit">Enter</button>
+      </form>
+      <div class="chips" id="gitQuick"></div>
+    </section>
+
+    <section class="panel">
+      <div class="qhead"><h2>Archivos</h2><button class="ed-btn" id="gitNew" type="button">Nuevo archivo</button></div>
+      <div id="gitFiles" class="stack"></div>
+      <div id="gitEditor" class="stack" hidden>
+        <input id="gitEdName" class="search mono" type="text" placeholder="nombre.txt" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Nombre del archivo">
+        <p id="gitEdNote" class="fb info" hidden><span><b>Conflicto:</b> deja solo el contenido correcto y borra las líneas &lt;&lt;&lt;&lt;&lt;&lt;&lt;, ======= y &gt;&gt;&gt;&gt;&gt;&gt;&gt;. Luego guarda, haz <code>git add</code> y termina con <code>git commit</code> (o <code>git rebase --continue</code>).</span></p>
+        <textarea id="gitEdText" class="mono" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Contenido del archivo"></textarea>
+        <div class="row"><button class="btn primary grow" id="gitEdSave" type="button">Guardar</button><button class="btn ghost" id="gitEdCancel" type="button">Cancelar</button></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>¿Conservar o reescribir la historia?</h2>
+      <div id="gitResumen"></div>
+      <p class="note">Regla de oro: en ramas compartidas (main, develop) usa merge o revert. Rebase, reset y squash reescriben: úsalos en tus ramas locales antes de compartirlas.</p>
+    </section>
+  </div>
+
+  <div class="view" id="lab-ia" hidden>
+    <section class="panel">
+      <h2>Laboratorio de IA</h2>
+      <p class="lead">Un modelo de lenguaje real no cabe en tu teléfono sin internet, pero sí todo lo que pasa a su alrededor. Aquí ves, paso a paso y en pequeño, cómo funcionan los tokens, la predicción, los embeddings y RAG.</p>
+      <p class="hint">Es una simulación educativa: los números son de juguete, pero la mecánica es la misma que usan Copilot y los demás asistentes.</p>
+    </section>
+
+    <section class="panel">
+      <h2>1. Tokens</h2>
+      <p class="lead">El modelo no lee palabras: lee tokens. Escribe y mira cómo se parte el texto.</p>
+      <textarea id="iaTokTxt" class="plain" rows="3" aria-label="Texto para tokenizar"></textarea>
+      <div id="iaTokOut" class="toks"></div>
+      <p class="small" id="iaTokStats" style="margin:0"></p>
+      <p class="small mono" style="margin:0">ids: <span id="iaTokIds"></span></p>
+      <p class="hint">Aproximación: cada modelo tiene su propio tokenizador. En español, una palabra suele ocupar entre 1 y 3 tokens.</p>
+    </section>
+
+    <section class="panel">
+      <h2>2. Predecir la siguiente palabra</h2>
+      <p class="lead">Un LLM calcula qué tan probable es cada posible siguiente token. Toca una opción para agregarla o genera varias seguidas.</p>
+      <input id="iaNextTxt" class="search" type="text" autocomplete="off" aria-label="Inicio de la frase">
+      <label class="label" for="iaTemp">Temperatura: <span id="iaTempVal" class="mono"></span></label>
+      <input id="iaTemp" type="range" min="0.1" max="2" step="0.1" value="1">
+      <p class="hint" style="margin:0">Baja = elige casi siempre la más probable (predecible). Alta = reparte la probabilidad (más creativa y más riesgo de incoherencias).</p>
+      <div id="iaNextOut" class="stack"></div>
+      <button class="btn primary" id="iaGen" type="button">Generar 8 palabras</button>
+      <div id="iaGenOut" class="stack"></div>
+      <p class="small" id="iaCorpus" style="margin:0"></p>
+    </section>
+
+    <section class="panel">
+      <h2>3. Embeddings: parecido por significado</h2>
+      <p class="lead">Compara dos frases. La búsqueda léxica cuenta palabras iguales; la semántica compara significados. Por eso "días libres" encuentra "vacaciones".</p>
+      <input id="iaSimA" class="search" type="text" autocomplete="off" aria-label="Frase A">
+      <input id="iaSimB" class="search" type="text" autocomplete="off" aria-label="Frase B">
+      <div class="chips" id="iaSimPares"></div>
+      <div id="iaSimOut" class="stack"></div>
+    </section>
+
+    <section class="panel">
+      <h2>4. RAG paso a paso</h2>
+      <p class="lead">Pregunta algo sobre las políticas de una empresa ficticia y mira cada paso: fragmentos, recuperación, permisos, prompt enriquecido y respuesta.</p>
+      <div class="chips" id="iaQs"></div>
+      <div class="term-in"><input id="iaQ" class="search" type="text" autocomplete="off" aria-label="Pregunta"><button class="btn primary" id="iaAsk" type="button">Preguntar</button></div>
+      <div class="ia-opts">
+        <label>Tu rol<select id="iaRol" class="search"><option value="empleado">Empleado</option><option value="rrhh">RR. HH.</option></select></label>
+        <label>Tamaño del chunk<select id="iaChunk" class="search"><option value="1">1 oración</option><option value="2" selected>2 oraciones</option><option value="4">4 oraciones</option></select></label>
+        <label>Fragmentos (top-k)<select id="iaK" class="search"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+        <label>Ventana de contexto<select id="iaWin" class="search"><option value="120">120 tokens</option><option value="250" selected>250 tokens</option><option value="600">600 tokens</option></select></label>
+      </div>
+      <p class="hint">Prueba: pregunta "¿Cuándo pagan la quincena?" como Empleado y luego como RR. HH.; o baja la ventana a 120 tokens.</p>
+      <div id="iaRagOut"></div>
+      <div class="label">Documentos de la empresa ficticia</div>
+      <div id="iaDocs" class="stack"></div>
+    </section>
+  </div>
   </div>
 
   <!-- CLAVES -->
@@ -150,6 +255,7 @@
       <div class="small" id="clavesCount"></div>
       <div class="terms" id="clavesList"></div>
     </section>
+  </div>
 
   <!-- CONCEPTOS -->
   <div class="view" id="view-conceptos" hidden>

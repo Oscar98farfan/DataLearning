@@ -6,6 +6,8 @@ Plataforma para practicar programación de **analista e ingeniero de datos**, de
 - **SQL de verdad:** los ejercicios de SQL se ejecutan en SQLite dentro del navegador. Si tu resultado coincide con el esperado, cuenta como correcto aunque lo hayas escrito distinto.
 - **Laboratorio SQL:** consultas libres sobre 4 tablas de práctica, con pasos guiados y 8 ejemplos explicados (de SELECT a CTE + LAG).
 - **Laboratorio de Python:** Python y pandas reales en el navegador (Pyodide). Usa los mismos datos como DataFrames más una tabla sucia para limpieza, e incluye 24 ejemplos: funciones, POO, limpieza, merge, groupby y series de tiempo. La primera vez descarga unos 50 MB; después funciona sin internet.
+- **Laboratorio de Git:** repositorio simulado con terminal, grafo de la historia en vivo, editor de archivos y 12 retos: merge, fast-forward, --no-ff, conflictos, rebase (con conflicto), squash, revert, reset --hard y --soft, cherry-pick y stash. Explica en cada caso si la historia se conserva o se reescribe.
+- **Laboratorio de IA:** simulación educativa de tokens, predicción de la siguiente palabra con temperatura, embeddings (léxico vs semántico) y RAG paso a paso con permisos, tamaño de chunk, top-k y ventana de contexto.
 - **Claves:** 61 buenas prácticas por lenguaje con ejemplos de qué evitar y cómo hacerlo mejor.
 - **Conceptos:** el recorrido de los datos (OLTP → lakehouse → medallion → Power BI) y el de un asistente con IA (RAG, Copilot, Copilot Studio). Incluye 13 comparaciones, un glosario de 175 términos y tarjetas de repaso.
 
@@ -34,6 +36,10 @@ js/
   laboratorio-python.js laboratorio de Python
   python-engine.js      carga Pyodide + pandas y ejecuta celdas
   claves.js             buenas prácticas por lenguaje
+  git-engine.js         simulador de Git (merge de 3 vías, rebase, reset…)
+  laboratorio-git.js    terminal, grafo y retos de Git
+  ia-engine.js          tokens, bigramas, embeddings y RAG simulados
+  laboratorio-ia.js     pantalla del laboratorio de IA
   conceptos.js          recorrido, comparaciones, glosario, tarjetas
   sql-engine.js         carga SQLite (sql.js) y compara resultados
   highlight.js          colores de sintaxis (SQL, Python, DAX, Git)
@@ -46,6 +52,8 @@ data/
   dataset.sql           datos de práctica (generados)
   python-lab.js         datos, ejemplos y entorno de Python
   claves.js             contenido de la pestaña Claves
+  git-retos.js          retos de Git (preparación, solución y verificación)
+  ia-lab.js             documentos, frases y conceptos del laboratorio de IA
 vendor/                 sql.js 1.10.3 (SQLite) y pyodide 0.26.4 (Python 3.12 + pandas 2.2)
 scripts/
   validar.mjs           revisa todo el contenido (npm test)
@@ -84,7 +92,7 @@ Antes de subir cambios, corre:
 npm test
 ```
 
-Verifica que cada solución pase su corrector, que cada SQL corra sobre los datos, que cada ejemplo y solución de Python corra en Python real (tarda unos 10 segundos) y que el modo sin internet incluya todos los archivos.
+Verifica que cada solución pase su corrector, que cada SQL corra sobre los datos, que cada ejemplo y solución de Python corra en Python real (tarda unos 10 segundos), que cada reto de Git se resuelva con su solución, que las pestañas estén bien cerradas en index.html y que el modo sin internet incluya todos los archivos.
 
 Si agregas un archivo nuevo (JS, datos o imagen), inclúyelo en `ARCHIVOS` dentro de `sw.js`. Para que los celulares descarguen la versión nueva de inmediato, sube el número de `CACHE` (por ejemplo `taller-datos-v2`).
 

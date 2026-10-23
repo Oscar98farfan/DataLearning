@@ -37,6 +37,7 @@ export const store = {
 // Inserta texto en un textarea en la posición del cursor (barra de símbolos y Tab).
 export function insertAt(ta, t) {
   if (!ta) return;
+  if (ta.tagName === 'INPUT' && t === '\n') { ta.form?.requestSubmit(); return; }
   const s = ta.selectionStart, e = ta.selectionEnd;
   ta.value = ta.value.slice(0, s) + t + ta.value.slice(e);
   const pairs = { '()': 1, '[]': 1, '{}': 1, "''": 1, '""': 1 };

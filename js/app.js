@@ -3,6 +3,8 @@ import { $, store, insertAt } from './util.js';
 import { initPractica, startTopic, keysVisible, resetProgress } from './practica.js';
 import { initLaboratorio, openLaboratorio } from './laboratorio.js';
 import { initLabPython, openLabPython } from './laboratorio-python.js';
+import { initLabGit } from './laboratorio-git.js';
+import { initLabIA } from './laboratorio-ia.js';
 import { initConceptos, resetKnown } from './conceptos.js';
 import { initClaves } from './claves.js';
 
@@ -11,17 +13,20 @@ let lab = store.get('pe_lab_tipo', 'sql');
 
 const enLab = () => !$('#view-laboratorio').hidden;
 
+const LABS = ['sql', 'py', 'git', 'ia'];
+
 function updateKeys() {
-  $('#keys').hidden = !(enLab() || (!$('#view-practica').hidden && keysVisible()));
+  $('#keys').hidden = !((enLab() && lab !== 'ia') || (!$('#view-practica').hidden && keysVisible()));
 }
 
 function setLab(t) {
-  lab = t === 'py' ? 'py' : 'sql';
-  $('#lab-sql').hidden = lab !== 'sql';
-  $('#lab-py').hidden = lab !== 'py';
+  lab = LABS.includes(t) ? t : 'sql';
+  for (const l of LABS) $('#lab-' + l).hidden = l !== lab;
   document.querySelectorAll('.seg-b').forEach((b) => b.setAttribute('aria-selected', b.dataset.lab === lab));
   store.set('pe_lab_tipo', lab);
-  if (lab === 'sql') openLaboratorio(); else openLabPython();
+  updateKeys();
+  if (lab === 'sql') openLaboratorio();
+  if (lab === 'py') openLabPython();
 }
 
 function setView(v) {
@@ -38,7 +43,10 @@ function setView(v) {
 
 // El editor activo recibe los símbolos de la barra inferior.
 function editorActivo() {
-  if (enLab()) return lab === 'py' ? $('#pyCode') : $('#labSql');
+  if (enLab()) {
+    if (lab === 'git') return $('#gitEditor').hidden ? $('#gitCmd') : $('#gitEdText');
+    return lab === 'py' ? $('#pyCode') : $('#labSql');
+  }
   return $('#ans');
 }
 
@@ -61,6 +69,8 @@ function init() {
   initPractica();
   initLaboratorio();
   initLabPython();
+  initLabGit();
+  initLabIA();
   initConceptos();
   initClaves();
   renderKeys();

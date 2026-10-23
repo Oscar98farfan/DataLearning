@@ -6,6 +6,9 @@
 //  5. El service worker incluye todos los archivos de la app.
 //  6. Los ejemplos del laboratorio de Python y las soluciones de Python/Pandas corren sin error.
 //  7. Las claves usan áreas válidas.
+//  8. index.html tiene los contenedores bien cerrados y cada pestaña al nivel correcto.
+//  9. Cada reto de Git se resuelve con su solución (y no viene resuelto).
+// 10. El RAG del laboratorio de IA responde las preguntas de ejemplo.
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +19,10 @@ import { GLOS, FLOWS } from '../data/conceptos.js';
 import { SETUP_LAB, SETUP_PRACTICA, EJEMPLOS_PY, CATS_PY } from '../data/python-lab.js';
 import { CLAVES, AREAS_CLAVES } from '../data/claves.js';
 import { HELPERS } from '../js/python-engine.js';
+import { Repo } from '../js/git-engine.js';
+import { RETOS } from '../data/git-retos.js';
+import { recuperar, responder } from '../js/ia-engine.js';
+import { PREGUNTAS } from '../data/ia-lab.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errores = [];
@@ -101,7 +108,39 @@ for (const x of BANK.filter((e) => (e.t === 'py' || e.t === 'pd') && e.k === 'w'
 // 7
 for (const c of CLAVES) if (!AREAS_CLAVES[c.a]) err(`Clave "${c.t}": área desconocida ${c.a}`);
 
+// 8
+{
+  const html = readFileSync(path.join(root, 'index.html'), 'utf8');
+  let prof = 0;
+  for (const m of html.matchAll(/<(\/?)div\b([^>]*)>/g)) {
+    if (m[1]) { prof--; continue; }
+    const id = (m[2].match(/id="([^"]+)"/) || [])[1] || '';
+    if (id.startsWith('view-') && prof !== 1) err(`index.html: la pestaña ${id} quedó dentro de otro contenedor (nivel ${prof}); falta cerrar un </div>`);
+    if (id.startsWith('lab-') && prof !== 2) err(`index.html: el laboratorio ${id} quedó en el nivel ${prof}; revisa los </div>`);
+    prof++;
+  }
+  if (prof !== 0) err(`index.html: hay ${prof > 0 ? prof + ' <div> sin cerrar' : -prof + ' </div> de más'}`);
+}
+
+// 9
+for (const r of RETOS) {
+  const repo = new Repo();
+  try {
+    for (const x of r.setup) { if (typeof x === 'function') x(repo); else { const o = repo.run(x); if (/^(error|fatal)/m.test(o)) throw new Error(`${x} → ${o}`); } }
+    if (r.check(repo)) err(`Reto de Git ${r.id}: ya viene resuelto antes de empezar`);
+    for (const x of r.solucion) { if (typeof x === 'function') x(repo); else if (!x.startsWith('#')) repo.run(x); }
+    if (!r.check(repo)) err(`Reto de Git ${r.id}: la solución no cumple el objetivo`);
+  } catch (e) { err(`Reto de Git ${r.id}: falla la preparación: ${e.message}`); }
+}
+
+// 10
+for (const q of PREGUNTAS) {
+  const rol = /quincena|nómina/i.test(q) ? 'rrhh' : 'empleado';
+  const { elegidos } = recuperar(q, { rol, k: 2 });
+  if (!responder(q, elegidos).fuente) err(`Laboratorio de IA: la pregunta "${q}" no encuentra respuesta`);
+}
+
 const porTema = Object.keys(TOPICS).map((t) => `${t}:${BANK.filter((x) => x.t === t).length}`).join(' ');
-console.log(`Ejercicios: ${BANK.length} (${porTema}) · SQL ejecutables: ${ejecutables} · Python probado: ${pyOk} · Glosario: ${GLOS.length} · Claves: ${CLAVES.length}`);
+console.log(`Ejercicios: ${BANK.length} (${porTema}) · SQL ejecutables: ${ejecutables} · Python probado: ${pyOk} · Glosario: ${GLOS.length} · Claves: ${CLAVES.length} · Retos Git: ${RETOS.length}`);
 if (errores.length) { console.error(`\n✗ ${errores.length} problema(s):\n- ` + errores.join('\n- ')); process.exit(1); }
 console.log('✓ Todo en orden');

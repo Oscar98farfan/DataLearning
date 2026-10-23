@@ -4,7 +4,7 @@
 // Si agregas un archivo nuevo, inclúyelo en ARCHIVOS (npm test lo verifica).
 // Python (vendor/pyodide, ~50 MB) va en una caché aparte que se llena la primera vez que lo usas
 // y no se borra al actualizar la app.
-const CACHE = 'taller-datos-v3';
+const CACHE = 'taller-datos-v4';
 const CACHE_PY = 'taller-datos-python-0.26.4';
 const ARCHIVOS_PYTHON = [
   'vendor/pyodide/pyodide.mjs',
@@ -33,12 +33,18 @@ const ARCHIVOS = [
   'js/python-engine.js',
   'js/laboratorio-python.js',
   'js/claves.js',
+  'js/git-engine.js',
+  'js/laboratorio-git.js',
+  'js/ia-engine.js',
+  'js/laboratorio-ia.js',
   'data/temas.js',
   'data/contextos.js',
   'data/conceptos.js',
   'data/dataset.sql',
   'data/python-lab.js',
   'data/claves.js',
+  'data/git-retos.js',
+  'data/ia-lab.js',
   'data/ejercicios/index.js',
   'data/ejercicios/python.js',
   'data/ejercicios/pandas.js',
